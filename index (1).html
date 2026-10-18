@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>校園活動管理系統</title>
+<style>
+:root{--bg:#f2f5f9;--card:#fff;--ink:#1c2733;--mut:#66758a;--pri:#0b4f8a;--pri-ink:#fff;--line:#d9e1ea;--open:#0a8a7a;--full:#b87400;--end:#8793a1;--bad:#c23b2e;--soft:#e8f1fa;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e161f;--card:#17212c;--ink:#e6edf4;--mut:#93a2b3;--pri:#5eaaf0;--pri-ink:#08192a;--line:#2a3846;--open:#3cc9b4;--full:#e5a93b;--end:#7d8a99;--bad:#ef7a6e;--soft:#1d2a38}}
+:root[data-theme="dark"]{--bg:#0e161f;--card:#17212c;--ink:#e6edf4;--mut:#93a2b3;--pri:#5eaaf0;--pri-ink:#08192a;--line:#2a3846;--open:#3cc9b4;--full:#e5a93b;--end:#7d8a99;--bad:#ef7a6e;--soft:#1d2a38}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif}
+button,input,select{font:inherit;color:inherit}
+header{background:var(--pri);color:var(--pri-ink);padding:12px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;flex:1;letter-spacing:.04em}
+.chip{background:rgba(255,255,255,.18);padding:3px 12px;border-radius:99px;font-size:13px}
+main{max-width:980px;margin:0 auto;padding:20px 16px 60px}
+.btn{border:1px solid var(--pri);background:var(--pri);color:var(--pri-ink);padding:7px 16px;border-radius:8px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--pri)}
+header .btn{background:transparent;border-color:rgba(255,255,255,.6);color:var(--pri-ink);padding:3px 12px}
+.btn.danger{background:transparent;border-color:var(--bad);color:var(--bad)}
+.btn:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--open);outline-offset:2px}
+.auth{max-width:380px;margin:40px auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px}
+.auth h2{margin:0 0 4px;font-size:22px}.auth p{color:var(--mut);margin:0 0 16px;font-size:13px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.tab{background:none;border:0;padding:8px 14px;cursor:pointer;color:var(--mut);border-bottom:3px solid transparent}
+.tab.on{color:var(--pri);border-color:var(--pri);font-weight:700}
+label{display:block;font-size:13px;color:var(--mut);margin:10px 0 3px}
+input,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin:14px 0}
+.bar>div{flex:1;min-width:140px}.bar label{margin-top:0}
+.list{display:grid;gap:12px}
+.ev{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stub{width:84px;flex:none;background:var(--soft);display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:2px dashed var(--line);padding:10px 0}
+.stub b{font-size:34px;line-height:1;font-variant-numeric:tabular-nums;color:var(--pri)}.stub span{font-size:12px;color:var(--mut)}
+.ev.ended .stub b{color:var(--end)}
+.body{flex:1;padding:12px 16px;min-width:0}
+.body h3{margin:0 0 2px;font-size:17px}
+.meta{color:var(--mut);font-size:13px}
+.badge{font-size:12px;padding:1px 10px;border-radius:99px;border:1px solid currentColor;margin-left:8px;vertical-align:2px;white-space:nowrap}
+.s-open{color:var(--open)}.s-full{color:var(--full)}.s-ended{color:var(--end)}
+.prog{height:6px;background:var(--line);border-radius:9px;margin:10px 0 4px;overflow:hidden}.prog i{display:block;height:100%;background:var(--open)}
+.s-full .prog i{background:var(--full)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.acts .btn{padding:4px 14px;font-size:13px}
+.empty{text-align:center;color:var(--mut);padding:40px 0;border:2px dashed var(--line);border-radius:12px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.sheet{background:var(--card);border-radius:14px;max-width:460px;width:100%;max-height:90vh;overflow:auto;padding:20px}
+.sheet h3{margin:0 0 6px}.sheet .acts{justify-content:flex-end;margin-top:16px}
+.sheet ol{padding-left:22px;margin:8px 0}
+textarea{width:100%;height:90px;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);color:var(--ink);font:12px/1.4 monospace}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 20px;border-radius:99px;z-index:30;display:none;max-width:90vw}
+.note{color:var(--mut);font-size:12px;margin-top:30px;text-align:center}
+.lnk{background:none;border:0;padding:0;cursor:pointer;font-weight:700;font-size:17px;color:var(--ink);text-align:left}.lnk:hover{color:var(--pri);text-decoration:underline}
+.prev{color:var(--ink);font-size:13px;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.desc{white-space:pre-wrap;word-break:break-word;background:var(--soft);border-radius:10px;padding:12px 14px}
+@media (max-width:520px){.stub{width:64px}.stub b{font-size:26px}}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(12px);opacity:0}}}
+</style>
+</head>
+<body>
+<header><h1>校園活動管理系統</h1><span id="who"></span></header>
+<main id="app"></main>
+<div id="toast" role="status"></div>
+<script>
+const KEY="cem_db_v1",pad=n=>String(n).padStart(2,"0");
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let db,me=null,view="all",flt={k:"",d:""},authTab="in";
+
+function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null}catch(e){return null}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
+async function sha(s){try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}catch(e){return"p:"+s}}
+function dt(days,h){const x=new Date();x.setDate(x.getDate()+days);return`${x.getFullYear()}-${pad(x.getMonth()+1)}-${pad(x.getDate())}T${pad(h)}:00`}
+async function seed(){
+  const p=await sha("1234");
+  db={users:[{id:"T001",name:"資工系學會",role:"O",pw:p},{id:"T002",name:"學生會",role:"O",pw:p},
+    {id:"S001",name:"王小明",role:"S",pw:p},{id:"S002",name:"陳小美",role:"S",pw:p},{id:"S003",name:"林大華",role:"S",pw:p}],
+   events:[
+    {id:"E001",title:"Java 程式設計工作坊",loc:"資訊大樓 301",time:dt(3,14),dept:"資工系學會",cap:30,org:"T001",parts:["S001"],desc:"從零開始學 Java：物件、類別、繼承與例外處理。\n\n流程：\n14:00 報到\n14:20 基礎語法與物件導向\n15:30 實作練習\n16:30 Q&A\n\n請自備筆電，並先安裝 JDK 21。"},
+    {id:"E002",title:"AI 職涯講座",loc:"國際會議廳",time:dt(7,19),dept:"資工系學會",cap:100,org:"T001",parts:[]},
+    {id:"E003",title:"校園路跑",loc:"田徑場",time:dt(10,8),dept:"學生會",cap:2,org:"T002",parts:["S002","S003"]},
+    {id:"E004",title:"迎新晚會",loc:"大禮堂",time:dt(14,18),dept:"學生會",cap:300,org:"T002",parts:[]},
+    {id:"E005",title:"社團博覽會",loc:"中庭廣場",time:dt(-5,10),dept:"學生會",cap:200,org:"T002",parts:["S001"]}]};
+  save();
+}
+const status=e=>new Date(e.time)<new Date()?"ended":e.parts.length>=e.cap?"full":"open";
+const SL={open:"開放中",full:"額滿",ended:"已結束"};
+const fmt=t=>t.replace("T"," ");
+function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display="none",2600)}
+
+function render(){
+  $("#who").innerHTML=me?`<span class="chip">${me.role==="O"?"主辦者":"學生"}｜${esc(me.name)}（${esc(me.id)}）</span> <button class="btn" data-a="out">登出</button>`:"";
+  $("#app").innerHTML=me?mainView():authView();
+}
+function authView(){
+  const reg=authTab==="reg";
+  return`<div class="auth"><h2>${reg?"註冊學生帳號":"登入"}</h2><p>${reg?"主辦者帳號由系統管理者建立。":"示範帳號：S001（學生）、T001（主辦者），密碼皆為 1234"}</p>
+  <div class="tabs"><button class="tab ${reg?"":"on"}" data-a="tab" data-v="in">登入</button><button class="tab ${reg?"on":""}" data-a="tab" data-v="reg">註冊</button></div>
+  <div id="authf"><label>學號 / 員工編號</label><input name="id" required autocomplete="username">
+  ${reg?'<label>姓名</label><input name="name" required>':""}
+  <label>密碼</label><input name="pw" type="password" required autocomplete="current-password">
+  <div class="acts" style="margin-top:16px"><button class="btn" style="width:100%" data-a="auth">${reg?"建立帳號":"登入"}</button></div></div></div>
+  <p class="note">資料儲存在你目前使用的瀏覽器中，不會上傳到伺服器。</p>`;
+}
+function list(){
+  let l=[...db.events].sort((a,b)=>a.time.localeCompare(b.time));
+  if(view==="mine")l=l.filter(e=>me.role==="S"?e.parts.includes(me.id):e.org===me.id);
+  const k=flt.k.toLowerCase();
+  if(k)l=l.filter(e=>[e.title,e.loc,e.dept].some(x=>x.toLowerCase().includes(k)));
+  if(flt.d)l=l.filter(e=>e.time.slice(0,10)===flt.d);
+  return l;
+}
+function mainView(){
+  const l=list(),O=me.role==="O";
+  return`<div class="tabs"><button class="tab ${view==="all"?"on":""}" data-a="view" data-v="all">所有活動</button>
+  <button class="tab ${view==="mine"?"on":""}" data-a="view" data-v="mine">${O?"我主辦的活動":"我的報名"}</button>
+  <span style="flex:1"></span>${O?'<button class="btn" data-a="new">＋ 建立活動</button>':""}</div>
+  <div class="bar"><div><label>關鍵字（標題、地點、主辦單位）</label><input id="fk" value="${esc(flt.k)}" placeholder="例如：講座"></div>
+  <div><label>日期</label><input id="fd" type="date" value="${flt.d}"></div>
+  <button class="btn ghost" data-a="clear">清除</button></div>
+  <div class="list">${l.length?l.map(card).join(""):'<div class="empty">沒有符合的活動</div>'}</div>`;
+}
+function card(e){
+  const s=status(e),d=new Date(e.time),mine=e.org===me.id,joined=e.parts.includes(me.id);
+  let a="";
+  if(me.role==="S"&&s!=="ended"){a=joined?`<button class="btn danger" data-a="cancel" data-id="${e.id}">取消報名</button>`:s==="open"?`<button class="btn" data-a="reg" data-id="${e.id}">報名</button>`:""}
+  if(me.role==="S"&&joined)a=`<span class="meta">✓ 已報名　</span>`+a;
+  if(mine)a=`<button class="btn ghost" data-a="parts" data-id="${e.id}">報名名單</button><button class="btn ghost" data-a="edit" data-id="${e.id}">編輯</button><button class="btn danger" data-a="del" data-id="${e.id}">刪除</button>`;
+  return`<article class="ev ${s} s-${s}"><div class="stub"><span>${d.getMonth()+1} 月</span><b>${d.getDate()}</b><span>${pad(d.getHours())}:${pad(d.getMinutes())}</span></div>
+  <div class="body"><h3><button class="lnk" data-a="detail" data-id="${e.id}">${esc(e.title)}</button><span class="badge s-${s}">${SL[s]}</span></h3>
+  <div class="meta">${esc(e.loc)}｜主辦：${esc(e.dept)}｜${e.id}</div>
+  ${e.desc?`<div class="prev">${esc(e.desc)}</div>`:""}
+  <div class="prog"><i style="width:${Math.min(100,e.parts.length/e.cap*100)}%"></i></div>
+  <div class="meta">${e.parts.length} / ${e.cap} 人（剩餘 ${Math.max(0,e.cap-e.parts.length)}）</div>
+  <div class="acts"><button class="btn ghost" data-a="detail" data-id="${e.id}">查看詳情</button>${a}</div></div></article>`;
+}
+function modal(h){const o=document.createElement("div");o.className="ov";o.id="ov";o.innerHTML=`<div class="sheet" role="dialog" aria-modal="true">${h}</div>`;document.body.appendChild(o)}
+function close(){const o=$("#ov");if(o)o.remove()}
+function confirmBox(msg,fn){modal(`<h3>確認</h3><p>${msg}</p><div class="acts"><button class="btn ghost" data-a="close">取消</button><button class="btn danger" id="yes">確定</button></div>`);$("#yes").onclick=()=>{close();fn()}}
+function form(e){
+  modal(`<h3>${e?"編輯活動":"建立活動"}</h3><div id="evf"><label>活動標題</label><input name="title" required value="${e?esc(e.title):""}">
+  <label>地點</label><input name="loc" required value="${e?esc(e.loc):""}"><label>時間</label><input name="time" type="datetime-local" required value="${e?e.time:""}">
+  <div class="row"><div><label>主辦單位</label><input name="dept" required value="${esc(e?e.dept:me.name)}"></div><div><label>名額</label><input name="cap" type="number" min="1" required value="${e?e.cap:30}"></div></div>
+  <label>活動詳細說明（內容、流程、注意事項、需攜帶物品…）</label><textarea name="desc" style="height:130px;font:inherit">${e?esc(e.desc||""):""}</textarea>
+  <input type="hidden" name="id" value="${e?e.id:""}"><div class="acts"><button type="button" class="btn ghost" data-a="close">取消</button><button class="btn" data-a="saveev">${e?"儲存變更":"建立活動"}</button></div></div>`);
+}
+function detail(e){
+  const s=status(e),joined=me.role==="S"&&e.parts.includes(me.id);
+  let act="";
+  if(me.role==="S"&&s!=="ended")act=joined?`<button class="btn danger" data-a="cancel" data-id="${e.id}" data-close="1">取消報名</button>`:s==="open"?`<button class="btn" data-a="reg" data-id="${e.id}" data-close="1">報名</button>`:"";
+  modal(`<h3>${esc(e.title)}<span class="badge s-${s}">${SL[s]}</span></h3>
+  <div class="meta" style="line-height:1.9">時間：${fmt(e.time)}<br>地點：${esc(e.loc)}<br>主辦單位：${esc(e.dept)}<br>名額：${e.parts.length} / ${e.cap}（剩餘 ${Math.max(0,e.cap-e.parts.length)}）${joined?"<br>✓ 你已報名此活動":""}</div>
+  <h4 style="margin:14px 0 6px">活動詳細說明</h4>
+  <div class="desc">${e.desc?esc(e.desc):'<span class="meta">主辦者尚未提供詳細說明。</span>'}</div>
+  <div class="acts"><button class="btn ghost" data-a="close">關閉</button>${act}</div>`);
+}
+function parts(e){
+  const rows=e.parts.map(id=>db.users.find(u=>u.id===id)).filter(Boolean);
+  const csv="\uFEFF序號,學號,姓名\n"+rows.map((u,i)=>`${i+1},${u.id},${u.name}`).join("\n");
+  modal(`<h3>${esc(e.title)}</h3><div class="meta">${rows.length} / ${e.cap} 人報名</div>
+  ${rows.length?`<ol>${rows.map(u=>`<li>${esc(u.id)} ${esc(u.name)}</li>`).join("")}</ol>`:'<div class="empty" style="margin:12px 0">尚無人報名</div>'}
+  <label>CSV 內容（複製後貼到 Excel 或存成 .csv）</label><textarea id="csv" readonly>${esc(csv)}</textarea>
+  <div class="acts"><button class="btn ghost" data-a="close">關閉</button><button class="btn" id="cp">複製 CSV</button></div>`);
+  $("#cp").onclick=async()=>{try{await navigator.clipboard.writeText(csv);toast("已複製 CSV")}catch(x){$("#csv").select();toast("請按 Ctrl+C 複製")}};
+}
+
+document.addEventListener("click",ev=>{
+  const b=ev.target.closest("[data-a]");if(!b)return;
+  const a=b.dataset.a,id=b.dataset.id,e=id&&db.events.find(x=>x.id===id);
+  if(b.dataset.close)close();
+  if(a==="tab"){authTab=b.dataset.v;render()}
+  else if(a==="out"){me=null;try{localStorage.removeItem("cem_me")}catch(x){}view="all";render()}
+  else if(a==="view"){view=b.dataset.v;render()}
+  else if(a==="clear"){flt={k:"",d:""};render()}
+  else if(a==="close")close();
+  else if(a==="auth")submit($("#authf"));
+  else if(a==="saveev")submit($("#evf"));
+  else if(a==="new")form();
+  else if(a==="edit")form(e);
+  else if(a==="parts")parts(e);
+  else if(a==="detail")detail(e);
+  else if(a==="reg"){
+    const c=db.events.find(x=>x.id!==e.id&&x.parts.includes(me.id)&&x.time===e.time&&status(x)!=="ended");
+    if(status(e)==="ended")toast("活動已結束，無法報名");
+    else if(status(e)==="full")toast("名額已滿，無法報名");
+    else if(e.parts.includes(me.id))toast("你已經報名過此活動");
+    else if(c)toast(`與「${c.title}」時間衝突`);
+    else{e.parts.push(me.id);save();render();toast("報名成功："+e.title)}
+  }
+  else if(a==="cancel"){e.parts=e.parts.filter(x=>x!==me.id);save();render();toast("已取消報名")}
+  else if(a==="del")confirmBox(`確定刪除「${esc(e.title)}」？所有報名紀錄會一併清除。`,()=>{db.events=db.events.filter(x=>x.id!==e.id);save();render();toast("已刪除活動")});
+});
+document.addEventListener("input",ev=>{
+  if(ev.target.id==="fk"||ev.target.id==="fd"){
+    flt.k=$("#fk").value;flt.d=$("#fd").value;
+    const pos=ev.target.selectionStart;render();const n=$("#"+ev.target.id);n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}
+  }
+});
+async function submit(box){
+  const f={};box.querySelectorAll("input,textarea").forEach(i=>{f[i.name]=i.value});
+  if([...box.querySelectorAll("input")].some(i=>i.type!=="hidden"&&!i.value.trim()))return toast("請填寫所有欄位");
+  if(box.id==="authf"){
+    f.id=f.id.trim();const h=await sha(f.pw);
+    if(authTab==="reg"){
+      if(db.users.some(u=>u.id===f.id))return toast("此學號已被註冊");
+      db.users.push({id:f.id,name:f.name.trim(),role:"S",pw:h});save();authTab="in";render();toast("註冊成功，請登入");
+    }else{
+      const u=db.users.find(x=>x.id===f.id&&x.pw===h);
+      if(!u)return toast("帳號或密碼錯誤");
+      me=u;try{localStorage.setItem("cem_me",u.id)}catch(x){}view="all";render();toast("歡迎，"+u.name);
+    }
+  }else if(box.id==="evf"){
+    const cap=parseInt(f.cap,10);
+    if(!(cap>0))return toast("名額必須大於 0");
+    if(f.id){
+      const e=db.events.find(x=>x.id===f.id);
+      if(cap<e.parts.length)return toast(`名額不可小於目前報名人數（${e.parts.length}）`);
+      Object.assign(e,{title:f.title.trim(),loc:f.loc.trim(),time:f.time,dept:f.dept.trim(),cap,desc:f.desc.trim()});toast("已儲存變更");
+    }else{
+      const n=Math.max(0,...db.events.map(x=>+x.id.slice(1)))+1;
+      db.events.push({id:"E"+String(n).padStart(3,"0"),title:f.title.trim(),loc:f.loc.trim(),time:f.time,dept:f.dept.trim(),cap,desc:f.desc.trim(),org:me.id,parts:[]});toast("已建立活動");
+    }
+    save();close();render();
+  }
+}
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape")close();
+  if(e.key==="Enter"&&e.target.tagName==="INPUT"){const box=e.target.closest("#authf,#evf");if(box){e.preventDefault();submit(box)}}
+});
+(async()=>{
+  db=load();if(!db)await seed();
+  try{const id=localStorage.getItem("cem_me");me=db.users.find(u=>u.id===id)||null}catch(e){}
+  render();
+})();
+</script>
+</body>
+</html>
